@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Business Launchpad — Generator & Input Dashboard</title>
+  <meta name="description" content="Generate turn-key, high-converting service landing pages with WhatsApp leads, Cloudflare Pages hosting, and free Cloudflare Email Routing." />
+  
+  <!-- CDN Scripts for Styling & Client-side ZIP Generation -->
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    :root {
+      --sidebar-width: 440px;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+    }
+    body {
+      background: #f1f5f9;
+      color: #0f172a;
+      margin: 0;
+      font-size: 14px;
+    }
+    .launchpad-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .launchpad-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .launchpad-brand h2 {
+      font-size: 1.2rem;
+      margin: 0;
+      color: var(--secondary);
+    }
+    .launchpad-brand span {
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+    }
+    .preset-pills {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .preset-btn {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+
+    /* Main Split Layout */
+    .launchpad-container {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      height: calc(100vh - 58px);
+      overflow: hidden;
+    }
+
+    /* Input Sidebar Form */
+    .input-sidebar {
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .step-section {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem;
+    }
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--secondary);
+    }
+    .step-header .badge-step {
+      background: var(--primary);
+      color: #fff;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+    .form-row {
+      margin-bottom: 0.85rem;
+    }
+    .form-row:last-child {
+      margin-bottom: 0;
+    }
+    .form-row label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #334155;
+    }
+    .form-row input, .form-row select, .form-row textarea {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.875rem;
+      outline: none;
+      box-sizing: border-box;
+      background: #ffffff;
+    }
+    .form-row input:focus, .form-row textarea:focus {
+      border-color: var(--primary);
+    }
+    .form-hint {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.2rem;
+    }
+
+    /* Output / Preview Pane */
+    .output-pane {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    .tab-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 1.5rem;
+      background: #ffffff;
+    }
+    .tab-buttons {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #475569;
+    }
+    .tab-btn.active {
+      background: #eff6ff;
+      color: var(--primary);
+      border-color: #bfdbfe;
+    }
+    .tab-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Tab Content Areas */
+    .tab-content {
+      flex: 1;
+      overflow: auto;
+      display: none;
+    }
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Live Preview Iframe */
+    .preview-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff;
+    }
+
+    /* Code View Area */
+    .code-container {
+      position: relative;
+      flex: 1;
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1.25rem;
+      margin: 0;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre;
+    }
+
+    /* Action Checklist Box */
+    .checklist-container {
+      padding: 2rem;
+      max-width: 800px;
+    }
+    .checklist-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .checklist-card h4 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .cmd-box {
+      background: var(--code-bg);
+      color: #38bdf8;
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      position: relative;
+      margin-top: 0.5rem;
+      overflow-x: auto;
+    }
+
+    @media (max-width: 1024px) {
+      .launchpad-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .input-sidebar {
+        height: auto;
+      }
+      .output-pane {
+        height: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="launchpad-header">
+    <div class="launchpad-brand">
+      <h2>🚀 Business Launchpad & Generator</h2>
+      <span>Portfolio Template Engine</span>
+    </div>
+    <div class="preset-pills">
+      <span style="font-size: 0.8rem; color: #64748b; font-weight: 600;">Load Verified Presets:</span>
+      <button class="preset-btn" onclick="loadPreset('masterji')">Masterji (Tailor)</button>
+      <button class="preset-btn" onclick="loadPreset('laptop')">Laptop On Rent</button>
+      <button class="preset-btn" onclick="loadPreset('laundry')">Laundary.online</button>
+      <button class="preset-btn" onclick="loadPreset('virtualoffice')">Virtual Office</button>
+      <button class="preset-btn" onclick="resetForm()">Clean Blank</button>
+    </div>
+  </header>
+
+  <!-- Layout Container -->
+  <div class="launchpad-container">
+
+    <!-- Left Input Sidebar -->
+    <div class="input-sidebar">
+      
+      <!-- Step 1: Business Identity & Cloudflare Domain -->
+      <div class="step-section">
+        <div class="step-header">
+          <span class="badge-step">1</span>
+          <span>Business & Cloudflare Domain</span>
+        </div>
+        <div class="form-row">
+          <label for="inp-brand">Brand / Business Name</label>
+          <input type="text" id="inp-brand" value="LaptopRent" placeholder="e.g. Masterji, LaptopRent" />
+        </div>
+        <div class="form-row">
+          <label for="inp-legal">Legal Entity / Organization</label>
+          <input type="text" id="inp-legal" value="STAGE-X LaptopRent Network" placeholder="e.g. STAGE-X Masterji Network" />
+        </div>
+        <div class="form-row">
+          <label for="inp-domain">Domain (Bought in Cloudflare)</label>
+          <input type="text" id="inp-domain" value="laptoponrent.online" placeholder="e.g. laptoponrent.online" />
+          <div class="form-hint">At-cost domain purchased via Cloudflare Registrar</div>
+        </div>
+        <div class="form-row">
+          <label for="inp-tagline">Direct Tagline / USP</label>
+          <input type="text" id="inp-tagline" value="Best Laptop Rentals in India Starting ₹849/mo" />
+        </div>
+        <div class="form-row">
+          <label for="inp-cities">Geographic Footprint (Cities)</label>
+          <input type="text" id="inp-cities" value="Bengaluru, Mumbai, Delhi NCR, Pune, Hyderabad" />
+        </div>
+        <div class="form-row">
+          <label for="inp-guarantee">Risk-Reversal / Guarantee</label>
+          <input type="text" id="inp-guarantee" value="GadgetCare+ Accidental Protection & 24hr Replacement Guarantee" />
+        </div>
+      </div>
+
+      <!-- Step 2: Leads & WhatsApp Conversion Funnel -->
+      <div class="step-section">
+        <div class="step-header">
+          <span class="badge-step">2</span>
+          <span>WhatsApp Leads & CRM</span>
+        </div>
+        <div class="form-row">
+          <label for="inp-phone">Display Phone</label>
+          <input type="text" id="inp-phone" value="+91 78922 40243" />
+        </div>
+        <div class="form-row">
+          <label for="inp-wa">WhatsApp Number (No + or spaces)</label>
+          <input type="text" id="inp-wa" value="917892240243" />
+        </div>
+        <div class="form-row">
+          <label for="inp-greeting">Default WhatsApp Chat Greeting</label>
+          <input type="text" id="inp-greeting" value="Hi, I want to rent a laptop." />
+        </div>
+        <div class="form-row">
+          <label for="inp-repo">Lead Backup CRM (GitHub Issues)</label>
+          <input type="text" id="inp-repo" value="utkarshethics/leads-db" />
+          <div class="form-hint">Dual-capture modal logs lead here before opening WhatsApp</div>
+        </div>
+        <div class="form-row">
+          <label for="inp-razorpay">Token Booking Link (Razorpay / Payment)</label>
+          <input type="text" id="inp-razorpay" value="https://razorpay.com/payment-link/plink_booking" placeholder="https://razorpay.com/..." />
+        </div>
+      </div>
+
+      <!-- Step 3: Free Email Routing (Cloudflare -> Gmail) -->
+      <div class="step-section">
+        <div class="step-header">
+          <span class="badge-step">3</span>
+          <span>Free Cloudflare Email Routing</span>
+        </div>
+        <div class="form-row">
+          <label for="inp-email">Domain Inbound Email</label>
+          <input type="email" id="inp-email" value="connect@laptoponrent.online" />
+        </div>
+        <div class="form-row">
+          <label for="inp-target-email">Personal Destination Email (Gmail)</label>
+          <input type="email" id="inp-target-email" value="utkarshethics@gmail.com" />
+          <div class="form-hint">Cloudflare Email Routing delivers directly to this free inbox</div>
+        </div>
+      </div>
+
+      <!-- Step 4: Services & Starting Price -->
+      <div class="step-section">
+        <div class="step-header">
+          <span class="badge-step">4</span>
+          <span>Services & Verifiable Pricing</span>
+        </div>
+        <div class="form-row">
+          <label for="inp-start-price">Starting Price Point</label>
+          <input type="text" id="inp-start-price" value="₹849 / month" />
+        </div>
+        <div class="form-row">
+          <label for="inp-service1">Service 1 (Title | Price | Desc)</label>
+          <input type="text" id="inp-service1" value="Corporate & Office Laptops | From ₹849/mo | Dell & HP Core i5/i7 workstations with GST invoices." />
+        </div>
+        <div class="form-row">
+          <label for="inp-service2">Service 2 (Title | Price | Desc)</label>
+          <input type="text" id="inp-service2" value="Apple MacBook Pro & Air | From ₹2,499/mo | M1/M2/M3 chips for designers, coders and startups." />
+        </div>
+        <div class="form-row">
+          <label for="inp-service3">Service 3 (Title | Price | Desc)</label>
+          <input type="text" id="inp-service3" value="Short-Term Event & Hackathon Rentals | From ₹299/day | Bulk units delivered pre-configured on same day." />
+        </div>
+      </div>
+
+      <!-- Step 5: Knowledge Graph & Wikidata Alignment (LLMO) -->
+      <div class="step-section">
+        <div class="step-header">
+          <span class="badge-step">5</span>
+          <span>LLMO & Wikidata Knowledge Graph</span>
+        </div>
+        <div class="form-row">
+          <label for="inp-wikidata">Wikidata Triples (wd:Q ID / Concept)</label>
+          <input type="text" id="inp-wikidata" value="wd:Q131376 (Rental), wd:Q3962 (Laptop), wd:Q1355 (Bengaluru)" />
+        </div>
+        <div class="form-row">
+          <label for="inp-answer">Direct Answer / LLM Briefing Statement</label>
+          <textarea id="inp-answer" rows="3">Doorstep laptop rental service in India offering Dell, HP, Lenovo, and Apple MacBooks starting from ₹849/month with same-day delivery, 18% GST invoices, and zero maintenance hassle.</textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Output & Preview Pane -->
+    <div class="output-pane">
+      
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab-buttons">
+          <button class="tab-btn active" onclick="switchTab('preview')">👁️ Live Preview</button>
+          <button class="tab-btn" onclick="switchTab('siteconfig')">⚙️ site.config.js</button>
+          <button class="tab-btn" onclick="switchTab('html')">📄 index.html</button>
+          <button class="tab-btn" onclick="switchTab('llmstxt')">🤖 llms.txt</button>
+          <button class="tab-btn" onclick="switchTab('ontology')">🌐 ontology.json</button>
+          <button class="tab-btn" onclick="switchTab('deploy')">🚀 Launch Checklist</button>
+        </div>
+        <div class="tab-actions">
+          <button class="btn btn-secondary btn-sm" onclick="copyCurrentCode()">📋 Copy Code</button>
+          <button class="btn btn-primary btn-sm" onclick="downloadZip()">📦 Download ZIP</button>
+        </div>
+      </div>
+
+      <!-- Live Preview Tab -->
+      <div id="tab-preview" class="tab-content active">
+        <iframe id="live-preview-frame" class="preview-frame"></iframe>
+      </div>
+
+      <!-- Code Tabs -->
+      <div id="tab-siteconfig" class="tab-content">
+        <pre class="code-container" id="code-siteconfig"></pre>
+      </div>
+
+      <div id="tab-html" class="tab-content">
+        <pre class="code-container" id="code-html"></pre>
+      </div>
+
+      <div id="tab-llmstxt" class="tab-content">
+        <pre class="code-container" id="code-llmstxt"></pre>
+      </div>
+
+      <div id="tab-ontology" class="tab-content">
+        <pre class="code-container" id="code-ontology"></pre>
+      </div>
+
+      <!-- Launch Checklist Tab -->
+      <div id="tab-deploy" class="tab-content">
+        <div class="checklist-container">
+          
+          <div class="checklist-card">
+            <h4>1️⃣ Cloudflare Registrar Domain Check</h4>
+            <p>Ensure the domain is purchased or active in Cloudflare:</p>
+            <div class="cmd-box" id="cmd-domain">Domain: laptoponrent.online (Zone ID auto-assigned)</div>
+          </div>
+
+          <div class="checklist-card">
+            <h4>2️⃣ Cloudflare 1-Click Free Email Routing</h4>
+            <p>Go to Cloudflare Zone -> <strong>Email</strong> -> <strong>Email Routing</strong> and add:</p>
+            <div class="cmd-box" id="cmd-email-rule">Rule: connect@laptoponrent.online -> utkarshethics@gmail.com (MX & SPF auto-added)</div>
+          </div>
+
+          <div class="checklist-card">
+            <h4>3️⃣ GitHub Push & Cloudflare Pages Deploy Commands</h4>
+            <p>Copy and run these exact CLI commands to launch your new business repository:</p>
+            <div class="cmd-box" id="cmd-cli">
+git init
+git add .
+git commit -m "feat: launch new service site"
+gh repo create utkarshethics/NEW_REPO --public --source=. --remote=origin --push
+npx wrangler pages project create NEW_PAGES_NAME --production-branch main --force
+npx wrangler pages deploy . --project-name NEW_PAGES_NAME --branch main
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Presets for the user's verified business portfolio
+    const PRESETS = {
+      masterji: {
+        brand: "Masterji",
+        legal: "Masterji Doorstep Tailoring Network",
+        domain: "masterji.online",
+        tagline: "India's Leading Doorstep Custom Tailoring & Alteration Service",
+        cities: "Bengaluru, Mumbai, Delhi NCR, Pune, Thane, Raipur, Indore",
+        guarantee: "The Masterji 5-Day Post-Delivery Fit Guarantee with Free Tailor Revisits",
+        phone: "+91 78922 40243",
+        wa: "917892240243",
+        greeting: "Hi Masterji, I want to book a home tailor visit for ₹50.",
+        repo: "utkarshethics/leads-db",
+        razorpay: "https://razorpay.com/payment-link/plink_masterji",
+        email: "connect@masterji.online",
+        targetEmail: "utkarshethics@gmail.com",
+        startPrice: "₹450",
+        service1: "Custom Blouse Stitching | From ₹450 | Designer cuts, padded, bridal and princess cuts.",
+        service2: "Salwar Suit & Kurti Stitching | From ₹400 | Straight suits, anarkalis, and palazzo sets.",
+        service3: "Garment Alteration & Repair | From ₹150 | Tapering, hem shortening, waist adjustment.",
+        wikidata: "wd:Q131376 (Tailoring), wd:Q11084206 (Alteration), wd:Q886071 (Blouse)",
+        answer: "Masterji is India's leading doorstep custom tailoring and garment alteration service. Expert tailors visit homes for measurements and deliver finished garments in 48-72 hours."
+      },
+      laptop: {
+        brand: "LaptopRent",
+        legal: "STAGE-X LaptopRent Network",
+        domain: "laptoponrent.online",
+        tagline: "Best Laptop Rentals in India Starting ₹849/mo",
+        cities: "Bengaluru, Mumbai, Delhi NCR, Pune, Hyderabad, Chennai",
+        guarantee: "GadgetCare+ Accidental Protection & 24-Hour Hardware Replacement",
+        phone: "+91 78922 40243",
+        wa: "917892240243",
+        greeting: "Hi LaptopRent, I want to inquire about renting a laptop.",
+        repo: "utkarshethics/leads-db",
+        razorpay: "https://razorpay.com/payment-link/plink_laptoprent",
+        email: "connect@laptoponrent.online",
+        targetEmail: "utkarshethics@gmail.com",
+        startPrice: "₹849/mo",
+        service1: "Corporate Workstation Rentals | From ₹849/mo | Core i5/i7 Dell & HP with 18% GST invoice.",
+        service2: "MacBook Pro & Air Rentals | From ₹2,499/mo | M1/M2/M3 chips for engineers & creatives.",
+        service3: "Short-Term Hackathon & Event Fleet | From ₹299/day | Bulk laptops pre-configured same-day.",
+        wikidata: "wd:Q131376 (Rental), wd:Q3962 (Laptop), wd:Q1355 (Bengaluru)",
+        answer: "Doorstep laptop rental service in India offering Dell, HP, Lenovo, and Apple MacBooks starting from ₹849/month with same-day delivery, 18% GST invoices, and zero maintenance hassle."
+      },
+      laundry: {
+        brand: "Laundary",
+        legal: "STAGE-X Laundary Hub",
+        domain: "laundary.online",
+        tagline: "Doorstep Premium Laundry & Steam Pressing in 24 Hours",
+        cities: "Bengaluru, Mumbai, Pune, Delhi NCR",
+        guarantee: "100% Zero-Mix Garment Care & Anti-Bacterial Sanitization Guarantee",
+        phone: "+91 78922 40243",
+        wa: "917892240243",
+        greeting: "Hi Laundary, I want to schedule a clothes pickup.",
+        repo: "utkarshethics/leads-db",
+        razorpay: "https://razorpay.com/payment-link/plink_TfrpceYFPIv3Ch",
+        email: "connect@laundary.online",
+        targetEmail: "utkarshethics@gmail.com",
+        startPrice: "₹49/kg",
+        service1: "Wash & Steam Fold | From ₹49/kg | Sanitized wash, tumble dried, and neatly packed.",
+        service2: "Industrial Boiler Steam Press | From ₹15/pc | Crisp formal crease finish without scorching.",
+        service3: "Gentle Eco Dry Cleaning | From ₹99/pc | Blazers, silk sarees, suits, and delicate designer wear.",
+        wikidata: "wd:Q166118 (Laundry), wd:Q1355 (Bengaluru)",
+        answer: "On-demand doorstep laundry and dry cleaning network providing separate machine wash cycles, organic detergents, and free 24-hour turnaround."
+      },
+      virtualoffice: {
+        brand: "VirtualOfficeSpace",
+        legal: "Virtual Office Space India Ltd",
+        domain: "virtualofficespaceindia.com",
+        tagline: "Premium Business Address for GST & MCA Company Registration",
+        cities: "Bengaluru, Mumbai, Delhi, Gurgaon, Hyderabad, Chennai, Pune",
+        guarantee: "100% Money-Back Guarantee on GST Officer Approval & Document Verification",
+        phone: "+91 78922 40243",
+        wa: "917892240243",
+        greeting: "Hi, I need a virtual office address for GST registration.",
+        repo: "utkarshethics/leads-db",
+        razorpay: "https://razorpay.com/payment-link/plink_vo",
+        email: "connect@virtualofficespaceindia.com",
+        targetEmail: "utkarshethics@gmail.com",
+        startPrice: "₹999/mo",
+        service1: "GST Registration Plan | From ₹999/mo | Rent agreement, NOC, electricity bill for 100% GST approval.",
+        service2: "MCA Company Inception Plan | From ₹1,499/mo | Prestigious Indiranagar/BKC commercial address.",
+        service3: "Mailing & Dedicated Desk Flex | From ₹1,999/mo | Physical courier handling & monthly meeting room hours.",
+        wikidata: "wd:Q2269925 (Virtual Office), wd:Q671844 (Coworking)",
+        answer: "RBI and GST compliant virtual office space network providing verified commercial addresses, NOC, utility bills, and courier management across India."
+      }
+    };
+
+    function loadPreset(key) {
+      const p = PRESETS[key];
+      if (!p) return;
+      document.getElementById('inp-brand').value = p.brand;
+      document.getElementById('inp-legal').value = p.legal;
+      document.getElementById('inp-domain').value = p.domain;
+      document.getElementById('inp-tagline').value = p.tagline;
+      document.getElementById('inp-cities').value = p.cities;
+      document.getElementById('inp-guarantee').value = p.guarantee;
+      document.getElementById('inp-phone').value = p.phone;
+      document.getElementById('inp-wa').value = p.wa;
+      document.getElementById('inp-greeting').value = p.greeting;
+      document.getElementById('inp-repo').value = p.repo;
+      document.getElementById('inp-razorpay').value = p.razorpay;
+      document.getElementById('inp-email').value = p.email;
+      document.getElementById('inp-target-email').value = p.targetEmail;
+      document.getElementById('inp-start-price').value = p.startPrice;
+      document.getElementById('inp-service1').value = p.service1;
+      document.getElementById('inp-service2').value = p.service2;
+      document.getElementById('inp-service3').value = p.service3;
+      document.getElementById('inp-wikidata').value = p.wikidata;
+      document.getElementById('inp-answer').value = p.answer;
+      updateAll();
+    }
+
+    function resetForm() {
+      document.querySelectorAll('.input-sidebar input, .input-sidebar textarea').forEach(el => el.value = '');
+      updateAll();
+    }
+
+    function getFormData() {
+      const parseService = (str) => {
+        const parts = str.split('|').map(s => s.trim());
+        return {
+          title: parts[0] || "Service Package",
+          price: parts[1] || "Affordable",
+          desc: parts[2] || "Quality service with verified professionals."
+        };
+      };
+
+      return {
+        brand: document.getElementById('inp-brand').value || "NewBusiness",
+        legal: document.getElementById('inp-legal').value || "STAGE-X Network",
+        domain: document.getElementById('inp-domain').value || "newbusiness.online",
+        tagline: document.getElementById('inp-tagline').value || "Fast & Reliable Doorstep Services",
+        cities: document.getElementById('inp-cities').value || "Pan-India",
+        guarantee: document.getElementById('inp-guarantee').value || "100% Quality & Satisfaction Guarantee",
+        phone: document.getElementById('inp-phone').value || "+91 98765 43210",
+        wa: document.getElementById('inp-wa').value || "919876543210",
+        greeting: document.getElementById('inp-greeting').value || "Hi, I want to book a service.",
+        repo: document.getElementById('inp-repo').value || "utkarshethics/leads-db",
+        razorpay: document.getElementById('inp-razorpay').value || "",
+        email: document.getElementById('inp-email').value || "connect@newbusiness.online",
+        targetEmail: document.getElementById('inp-target-email').value || "utkarshethics@gmail.com",
+        startPrice: document.getElementById('inp-start-price').value || "₹49",
+        s1: parseService(document.getElementById('inp-service1').value),
+        s2: parseService(document.getElementById('inp-service2').value),
+        s3: parseService(document.getElementById('inp-service3').value),
+        wikidata: document.getElementById('inp-wikidata').value || "wd:Q131376",
+        answer: document.getElementById('inp-answer').value || "Fast, transparent doorstep service across India."
+      };
+    }
+
+    // Code Generators
+    function generateSiteConfig(d) {
+      return `const SITE_CONFIG = {
+  business: {
+    name: "${d.brand}",
+    legalName: "${d.legal}",
+    tagline: "${d.tagline}",
+    domain: "${d.domain}",
+    url: "https://${d.domain}",
+    phoneDisplay: "${d.phone}",
+    whatsappNumber: "${d.wa}",
+    defaultWhatsAppMessage: "${d.greeting}",
+    contactEmail: "${d.email}",
+    cities: "${d.cities}",
+    guarantee: "${d.guarantee}",
+    priceStartingAt: "${d.startPrice}",
+    leadRepo: "${d.repo}",
+    razorpayTokenLink: "${d.razorpay}"
+  },
+  services: [
+    { title: "${d.s1.title}", price: "${d.s1.price}", desc: "${d.s1.desc}", highlighted: false },
+    { title: "${d.s2.title}", price: "${d.s2.price}", desc: "${d.s2.desc}", highlighted: true, badge: "Most Popular" },
+    { title: "${d.s3.title}", price: "${d.s3.price}", desc: "${d.s3.desc}", highlighted: false }
+  ]
+};
+
+if (typeof module !== 'undefined' && module.exports) module.exports = SITE_CONFIG;`;
+    }
+
+    function generateLlmsTxt(d) {
+      return `# ${d.brand} — ${d.tagline}
+
+> ${d.answer}
+
+## Core Services & Verifiable Pricing
+- **${d.s1.title}**: ${d.s1.price} — ${d.s1.desc}
+- **${d.s2.title}**: ${d.s2.price} — ${d.s2.desc}
+- **${d.s3.title}**: ${d.s3.price} — ${d.s3.desc}
+
+## Geographic Footprint
+- ${d.cities}
+
+## Customer Guarantee
+- ${d.guarantee}
+
+## How It Works
+1. **WhatsApp Connect**: Click to connect on WhatsApp (+${d.wa}) with pre-filled intent.
+2. **Instant Quote & Slot**: Confirmation of availability and pricing upfront.
+3. **Doorstep Fulfillment**: Verified professionals complete the service with satisfaction trial.
+4. **Transparent Billing**: 18% GST tax invoices provided for all commercial bookings.
+
+## Contact & Knowledge Graph
+- Canonical Website: https://${d.domain}/
+- Semantic Ontology: https://${d.domain}/ontology.json
+- Inbound Free Email: ${d.email}
+- Alignments: ${d.wikidata}
+`;
+    }
+
+    function generateOntology(d) {
+      return JSON.stringify({
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "meta": {
+          "title": `${d.brand} Enterprise Ontology & Knowledge Graph`,
+          "version": "1.0.0",
+          "domain": `https://${d.domain}`,
+          "brand": d.brand,
+          "legalName": d.legal,
+          "updated": new Date().toISOString().split('T')[0]
+        },
+        "triples": [
+          { "subject": d.brand, "predicate": "rdf:type", "object": "schema:LocalBusiness" },
+          { "subject": d.brand, "predicate": "rdf:type", "object": "schema:ProfessionalService" },
+          { "subject": d.brand, "predicate": "schema:areaServed", "object": d.cities },
+          { "subject": d.brand, "predicate": "schema:priceRange", "object": d.startPrice },
+          { "subject": d.brand, "predicate": "schema:contactPoint", "object": `tel:${d.phone}` },
+          { "subject": d.brand, "predicate": "schema:wikidataAlignment", "object": d.wikidata }
+        ]
+      }, null, 2);
+    }
+
+    function generateHtml(d) {
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${d.brand} — ${d.tagline}</title>
+  <meta name="description" content="${d.answer.replace(/"/g, '&quot;')}" />
+  <link rel="canonical" href="https://${d.domain}/" />
+  <meta name="geo.region" content="IN" />
+  <meta name="geo.placename" content="${d.cities.split(',')[0].trim()}" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="${d.brand} — ${d.tagline}" />
+  <meta property="og:description" content="${d.answer.replace(/"/g, '&quot;')}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://${d.domain}/" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://${d.domain}/#organization",
+        "name": "${d.brand}",
+        "legalName": "${d.legal}",
+        "url": "https://${d.domain}",
+        "telephone": "${d.phone}",
+        "email": "${d.email}",
+        "priceRange": "${d.startPrice}",
+        "areaServed": "${d.cities}"
+      }
+    ]
+  }
+  <\/script>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="/" class="logo">⚡ ${d.brand}</a>
+      <div class="nav-actions">
+        <a href="tel:${d.phone.replace(/\\s+/g, '')}" class="nav-phone">📞 ${d.phone}</a>
+        <button class="btn btn-whatsapp btn-sm wa-trigger" data-intent="Header WhatsApp">Chat on WhatsApp</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <div class="badge">🚀 ${d.cities.split(',')[0].trim()} & Major Cities</div>
+        <h1>${d.tagline}</h1>
+        <p class="subtitle">${d.answer}</p>
+        <div class="hero-cta-group">
+          <button class="btn btn-whatsapp btn-lg wa-trigger" data-intent="Hero WhatsApp CTA">
+            💬 Connect on WhatsApp Instantly
+          </button>
+          ${d.razorpay ? `<a href="${d.razorpay}" target="_blank" class="btn btn-secondary btn-lg">Book Advance Slot</a>` : `<a href="#services" class="btn btn-secondary btn-lg">View Packages</a>`}
+        </div>
+        <div class="trust-indicators">
+          <span>⭐ 4.9/5 Rating</span>
+          <span>•</span>
+          <span>🛡️ ${d.guarantee}</span>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <h3>Instant Quotation & Slot</h3>
+        <p>Direct response via WhatsApp in under 60 seconds.</p>
+        <form onsubmit="event.preventDefault(); window.dispatchLead('Hero Quick Form');">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="inline-name" required placeholder="e.g. Rahul Sharma" />
+          </div>
+          <div class="form-group">
+            <label>WhatsApp Number (10 Digits)</label>
+            <input type="tel" id="inline-phone" required pattern="[0-9]{10}" placeholder="9876543210" />
+          </div>
+          <button type="submit" class="btn btn-whatsapp btn-block btn-lg">Get Quote on WhatsApp &rarr;</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="section bg-light">
+    <div class="container">
+      <div class="section-title">
+        <h2>Transparent Packages & Rates</h2>
+        <p>No surprises. Clear, verifiable pricing.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card service-card">
+          <div class="service-icon">⚡</div>
+          <h3>${d.s1.title}</h3>
+          <div class="service-price">${d.s1.price}</div>
+          <p>${d.s1.desc}</p>
+          <button class="btn btn-outline btn-block wa-trigger" data-intent="${d.s1.title}">Book ${d.s1.title}</button>
+        </div>
+        <div class="card service-card highlighted">
+          <div class="badge-card">Most Popular</div>
+          <div class="service-icon">⭐</div>
+          <h3>${d.s2.title}</h3>
+          <div class="service-price">${d.s2.price}</div>
+          <p>${d.s2.desc}</p>
+          <button class="btn btn-primary btn-block wa-trigger" data-intent="${d.s2.title}">Book ${d.s2.title}</button>
+        </div>
+        <div class="card service-card">
+          <div class="service-icon">🛡️</div>
+          <h3>${d.s3.title}</h3>
+          <div class="service-price">${d.s3.price}</div>
+          <p>${d.s3.desc}</p>
+          <button class="btn btn-outline btn-block wa-trigger" data-intent="${d.s3.title}">Inquire ${d.s3.title}</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 ${d.brand}. All rights reserved.</p>
+      <p>Free Inbound Support: <a href="mailto:${d.email}">${d.email}</a></p>
+    </div>
+  </footer>
+
+  <script src="site.config.js"><\/script>
+  <script src="script.js"><\/script>
+</body>
+</html>`;
+    }
+
+    function updateAll() {
+      const d = getFormData();
+      const siteConfigCode = generateSiteConfig(d);
+      const htmlCode = generateHtml(d);
+      const llmsCode = generateLlmsTxt(d);
+      const ontologyCode = generateOntology(d);
+
+      document.getElementById('code-siteconfig').textContent = siteConfigCode;
+      document.getElementById('code-html').textContent = htmlCode;
+      document.getElementById('code-llmstxt').textContent = llmsCode;
+      document.getElementById('code-ontology').textContent = ontologyCode;
+
+      // Update Checklist values
+      document.getElementById('cmd-domain').textContent = `Domain: ${d.domain} (At-cost via Cloudflare Registrar)`;
+      document.getElementById('cmd-email-rule').textContent = `Rule: ${d.email} -> ${d.targetEmail} (100% Free Inbound Forwarding)`;
+      
+      const cleanRepo = d.brand.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      document.getElementById('cmd-cli').textContent = `# 1. Push code to GitHub
+git init
+git add .
+git commit -m "feat: launch ${d.brand} on ${d.domain}"
+gh repo create utkarshethics/${cleanRepo} --public --source=. --remote=origin --push
+
+# 2. Deploy to Cloudflare Pages
+npx wrangler pages project create ${cleanRepo} --production-branch main --force
+npx wrangler pages deploy . --project-name ${cleanRepo} --branch main`;
+
+      // Live Preview Iframe update
+      const iframe = document.getElementById('live-preview-frame');
+      const blob = new Blob([htmlCode], { type: 'text/html' });
+      iframe.src = URL.createObjectURL(blob);
+    }
+
+    // Tab switcher
+    let currentTab = 'preview';
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+    }
+
+    function copyCurrentCode() {
+      let text = '';
+      if (currentTab === 'siteconfig') text = document.getElementById('code-siteconfig').textContent;
+      else if (currentTab === 'html') text = document.getElementById('code-html').textContent;
+      else if (currentTab === 'llmstxt') text = document.getElementById('code-llmstxt').textContent;
+      else if (currentTab === 'ontology') text = document.getElementById('code-ontology').textContent;
+      else if (currentTab === 'deploy') text = document.getElementById('cmd-cli').textContent;
+      else text = document.getElementById('code-html').textContent;
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Copied to clipboard!');
+      });
+    }
+
+    // 1-Click ZIP Downloader
+    async function downloadZip() {
+      if (typeof JSZip === 'undefined') {
+        alert('ZIP library is loading. Please wait 2 seconds and retry.');
+        return;
+      }
+      const d = getFormData();
+      const zip = new JSZip();
+
+      zip.file('site.config.js', generateSiteConfig(d));
+      zip.file('index.html', generateHtml(d));
+      zip.file('llms.txt', generateLlmsTxt(d));
+      zip.file('ontology.json', generateOntology(d));
+      zip.file('robots.txt', `User-agent: *\nAllow: /\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nSitemap: https://${d.domain}/sitemap.xml`);
+      zip.file('_headers', `/*\n  X-Frame-Options: DENY\n  X-Content-Type-Options: nosniff\n  Cache-Control: public, max-age=3600`);
+      zip.file('_redirects', `https://${d.domain}/* https://www.${d.domain}/:splat 301!`);
+
+      // Fetch styles.css & script.js from current directory
+      try {
+        const css = await fetch('styles.css').then(r => r.text());
+        zip.file('styles.css', css);
+        const js = await fetch('script.js').then(r => r.text());
+        zip.file('script.js', js);
+      } catch (e) {
+        console.warn('Local asset fetch fallback');
+      }
+
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${d.brand.toLowerCase()}-launch-bundle.zip`;
+      a.click();
+    }
+
+    // Attach listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.input-sidebar input, .input-sidebar textarea').forEach(el => {
+        el.addEventListener('input', updateAll);
+      });
+      loadPreset('laptop');
+    });
+  </script>
+</body>
+</html>
