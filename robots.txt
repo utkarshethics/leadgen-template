@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# LLM & AI Agents
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://expressservices.online/sitemap.xml

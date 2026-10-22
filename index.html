@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExpressServices — Doorstep Service Solutions | Fast & Verified</title>
+  <meta name="description" content="Fast, reliable doorstep service solutions starting at ₹49. Verified technicians, transparent rates, same-day delivery. Book instantly on WhatsApp." />
+  <link rel="canonical" href="https://expressservices.online/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ExpressServices — Doorstep Service Solutions" />
+  <meta property="og:description" content="Fast, reliable doorstep service solutions. Verified technicians, transparent rates, same-day delivery." />
+  <meta property="og:url" content="https://expressservices.online/" />
+  
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Structured Data: LocalBusiness, Service & FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://expressservices.online/#business",
+        "name": "ExpressServices",
+        "url": "https://expressservices.online",
+        "telephone": "+91-98765-43210",
+        "email": "contact@expressservices.online",
+        "priceRange": "₹₹",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Indiranagar 100ft Road",
+          "addressLocality": "Bangalore",
+          "addressRegion": "Karnataka",
+          "postalCode": "560038",
+          "addressCountry": "IN"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "1240"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How quickly can I book a service?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "You can book in under 60 seconds directly on WhatsApp. Our representative confirms availability and dispatches an executive right away."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What payment methods are supported?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "We accept UPI (GPay, PhonePe, Paytm), Net Banking, Credit/Debit cards, and Cash on Delivery / Completion."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="/" class="logo">⚡ <span data-bind="name">ExpressServices</span></a>
+      <div class="nav-actions">
+        <a href="tel:+919876543210" class="nav-phone" data-bind-href="phone">
+          📞 <span data-bind="phoneDisplay">+91 98765 43210</span>
+        </a>
+        <button class="btn btn-whatsapp btn-sm wa-trigger" data-intent="Header WhatsApp Click">
+          Chat on WhatsApp
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <div class="badge">
+          <span>⚡</span> <span data-bind="turnaroundTime">Same-Day Delivery / Service</span>
+        </div>
+        
+        <h1 data-bind="tagline">Fast & Reliable On-Demand Services at Your Doorstep</h1>
+        
+        <!-- Answer-First / Direct Briefing block for LLMs & Users -->
+        <p class="subtitle" data-bind="description">
+          Professional doorstep service with fast turnaround, verified experts, and transparent pricing. Book instantly via WhatsApp.
+        </p>
+
+        <div class="hero-cta-group">
+          <button class="btn btn-whatsapp btn-lg wa-trigger" data-intent="Hero WhatsApp CTA">
+            💬 Connect on WhatsApp Instantly
+          </button>
+          <a href="#services" class="btn btn-secondary btn-lg">Explore Services</a>
+        </div>
+
+        <div class="trust-indicators">
+          <span>⭐ <strong data-bind="ratingScore">4.9</strong>/5 Rating (<span data-bind="reviewCount">1,240+</span> reviews)</span>
+          <span>•</span>
+          <span>🛡️ Verified Background Checks</span>
+          <span>•</span>
+          <span>📄 GST Invoice Available</span>
+        </div>
+      </div>
+
+      <!-- Hero Inline Booking Card -->
+      <div class="hero-card">
+        <h3>Quick Quotation & Booking</h3>
+        <p>Get an immediate response and estimate on WhatsApp.</p>
+        <form onsubmit="window.handleInlineSubmit(event)">
+          <div class="form-group">
+            <label for="inline-name">Your Full Name</label>
+            <input type="text" id="inline-name" placeholder="e.g. Rahul Sharma" required />
+          </div>
+          <div class="form-group">
+            <label for="inline-phone">WhatsApp Number</label>
+            <input type="tel" id="inline-phone" placeholder="e.g. 9876543210" pattern="[0-9]{10}" required />
+          </div>
+          <div class="form-group">
+            <label for="inline-service">Select Service</label>
+            <select id="inline-service">
+              <option value="Express On-Demand Service">Express On-Demand Service</option>
+              <option value="Standard Full-Care Package">Standard Full-Care Package</option>
+              <option value="Commercial & Bulk Orders">Commercial & Bulk Orders</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-whatsapp btn-block btn-lg">
+            Get Quote on WhatsApp &rarr;
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="section bg-light">
+    <div class="container">
+      <div class="section-title">
+        <h2>Transparent Service Packages</h2>
+        <p>No hidden charges. Clear pricing with complete service guarantee.</p>
+      </div>
+      <!-- Dynamically filled by script.js from site.config.js -->
+      <div id="services-grid" class="grid grid-3"></div>
+    </div>
+  </section>
+
+  <!-- 3-Step Process -->
+  <section class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>How It Works in 3 Quick Steps</h2>
+        <p>Zero friction booking. From inquiry to doorstep fulfillment.</p>
+      </div>
+      <div class="grid grid-3 steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Message on WhatsApp</h3>
+          <p>Tap any button to share your requirements and address with our support executive.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Instant Scheduling</h3>
+          <p>Receive an upfront quote and confirm a time slot that suits your schedule.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Doorstep Fulfillment</h3>
+          <p>Our verified specialist arrives on time and completes the work with full satisfaction guarantee.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="section bg-light">
+    <div class="container">
+      <div class="section-title">
+        <h2>Frequently Asked Questions</h2>
+        <p>Everything you need to know about our services and booking process.</p>
+      </div>
+      <!-- Dynamically rendered from site.config.js -->
+      <div id="faqs-grid" class="faq-grid"></div>
+    </div>
+  </section>
+
+  <!-- Floating Sticky WhatsApp Button -->
+  <a href="#" id="wa-float" class="wa-float" aria-label="Chat on WhatsApp">
+    <span class="wa-float-label">Chat on WhatsApp</span>
+    <div class="wa-float-icon">
+      <svg viewBox="0 0 32 32" width="30" height="30" fill="currentColor">
+        <path d="M16 3C9.1 3 3.5 8.6 3.5 15.5c0 2.2.6 4.3 1.7 6.2L3 29l7.5-2.1c1.7.9 3.6 1.4 5.5 1.4 6.9 0 12.5-5.6 12.5-12.5C28.5 8.6 22.9 3 16 3zm0 22.9c-1.9 0-3.7-.5-5.3-1.4l-.4-.2-4.5 1.3 1.3-4.4-.2-.4c-1-1.6-1.5-3.4-1.5-5.3C5.4 10.1 10.1 5.5 16 5.5s10.6 4.6 10.6 10.6S21.9 25.9 16 25.9zm5.9-7.8c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.4-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.4-.6.1-.2.1-.4 0-.6-.1-.2-.8-1.9-1-2.6-.3-.6-.6-.5-.8-.5h-.7c-.2 0-.6.1-1 .5-1.6 1.6-2.1 4.3.9 7 3 2.8 5.3 3.6 7.2 3.9.9.1 1.8-.1 2.7-.6.6-.3 1.4-1.2 1.4-2.4 0-.9-.4-1.3-.7-1.5z"/>
+      </svg>
+    </div>
+  </a>
+
+  <!-- Lead Capture Modal before WhatsApp Redirect -->
+  <div id="wa-modal" class="modal-overlay" hidden>
+    <div class="modal-box">
+      <button class="modal-close" onclick="window.closeWaModal()">&times;</button>
+      <h3>Instant WhatsApp Connect</h3>
+      <p>Enter your details so our executive can greet you with your quotation.</p>
+      <form onsubmit="window.handleModalSubmit(event)">
+        <label for="modal-name">Your Full Name</label>
+        <input type="text" id="modal-name" required placeholder="e.g. Rahul Sharma" />
+        <label for="modal-phone">WhatsApp Number (10 Digits)</label>
+        <input type="tel" id="modal-phone" required placeholder="e.g. 9876543210" pattern="[0-9]{10}" />
+        <button type="submit" class="btn btn-whatsapp btn-block btn-lg">
+          Open WhatsApp Now &rarr;
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 <span data-bind="name">ExpressServices</span>. All rights reserved.</p>
+      <p>Free Inbound Support: <a href="mailto:contact@expressservices.online" data-bind-href="email"><span data-bind="contactEmail">contact@expressservices.online</span></a></p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="site.config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

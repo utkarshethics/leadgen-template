@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "meta": {
+    "title": "ExpressServices Enterprise Ontology & Knowledge Graph",
+    "version": "1.0.0",
+    "domain": "https://expressservices.online",
+    "brand": "ExpressServices",
+    "legalName": "STAGE-X Express Services",
+    "updated": "2026-10-22"
+  },
+  "triples": [
+    {
+      "subject": "ExpressServices",
+      "predicate": "rdf:type",
+      "object": "schema:LocalBusiness",
+      "wikidataAlignment": "https://www.wikidata.org/wiki/Q131376"
+    },
+    {
+      "subject": "ExpressServices",
+      "predicate": "rdf:type",
+      "object": "schema:ProfessionalService",
+      "wikidataAlignment": "https://www.wikidata.org/wiki/Q11084206"
+    },
+    {
+      "subject": "ExpressServices",
+      "predicate": "schema:areaServed",
+      "object": "City:Bengaluru",
+      "wikidataAlignment": "https://www.wikidata.org/wiki/Q1355"
+    },
+    {
+      "subject": "ExpressServices",
+      "predicate": "schema:serviceType",
+      "object": "OnDemandDoorstepService",
+      "wikidataAlignment": "https://www.wikidata.org/wiki/Q166118"
+    },
+    {
+      "subject": "ExpressServices",
+      "predicate": "schema:priceRange",
+      "object": "₹₹"
+    },
+    {
+      "subject": "ExpressServices",
+      "predicate": "schema:contactPoint",
+      "object": "WhatsAppConnect"
+    }
+  ]
+}

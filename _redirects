@@ -1,0 +1,2 @@
+# Clean canonical rewrites
+https://expressservices.online/* https://www.expressservices.online/:splat 301!
