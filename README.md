@@ -2,6 +2,9 @@
 
 This repository is a production-grade, zero-build starter template for launching niche service businesses that capture leads on WhatsApp and route custom domain emails freely to Gmail.
 
+🌐 **Live Cloudflare Pages URL:** [https://leadgen-template.pages.dev/](https://leadgen-template.pages.dev/)  
+📦 **GitHub Repository:** [https://github.com/utkarshethics/leadgen-template](https://github.com/utkarshethics/leadgen-template)
+
 ---
 
 ## 🚀 10-Minute Setup SOP
